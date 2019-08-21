@@ -35,8 +35,29 @@ class App extends Component {
   config: Config = {
     pages: [
       'pages/loading/index',//加载页
-      'pages/index/index'
+      'pages/scan/index',
+      'pages/log/index',
+      'pages/index/index',
     ],
+    tabBar: {
+      color: '#666',
+      selectedColor: '#000',
+      backgroundColor: '#fff',
+      list: [
+        {
+          pagePath: 'pages/index/index',
+          iconPath: 'assets/icons/home.png',
+          selectedIconPath: 'assets/icons/home-active.png',
+          text: '首页'
+        },
+        {
+          pagePath: 'pages/log/index',
+          iconPath: 'assets/icons/report.png',
+          selectedIconPath: 'assets/icons/report-active.png',
+          text: '实时日志'
+        }
+      ]
+    },
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
