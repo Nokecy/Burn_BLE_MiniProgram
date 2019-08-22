@@ -3,21 +3,22 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { Global, actions } from "../../models/global";
-import { AtAccordion, AtIcon, AtFab, AtToast } from 'taro-ui';
+import { AtAccordion, AtIcon, AtFab, AtToast, AtInput, AtButton } from 'taro-ui';
 import "./index.less";
 
 type PageOwnProps = {
   dispatch?: Function,
-  reConnectLoading?: boolean
+  connectLoading?: boolean
 }
 type IProps = Global & PageOwnProps
 type PageState = {
   open?: string
+  str?: string
 }
 
 @connect(({ global, loading }) => ({
   ...global,
-  reConnectLoading: loading.effects["global/reConnect"],
+  connectLoading: loading.effects["global/connect"],
 }))
 class Index extends Component<IProps, PageState> {
 
@@ -103,8 +104,18 @@ class Index extends Component<IProps, PageState> {
     dispatch!(actions.readData({ serviceId: serviceId, characteristicId: characteristicId }));
   }
 
+  sendData = () => {
+    const { dispatch } = this.props;
+    dispatch!(actions.sendData({ str: this.state.str! }));
+  }
+
+  isShowSubmit = () => {
+    const { writeCharacteristic } = this.props;
+    return !writeCharacteristic;
+  }
+
   render() {
-    const { reConnectLoading, connectedServices } = this.props
+    const { connectLoading, connectedServices } = this.props
     return (
       <View>
         {
@@ -164,7 +175,14 @@ class Index extends Component<IProps, PageState> {
           })
         }
 
-        <AtToast isOpened={reConnectLoading ? true : false} duration={0} text="重新连接中..." status={"loading"}></AtToast>
+        <View style={{ position: "fixed", width: "100%", bottom: "16px" }}>
+          <AtInput name={"input"} onChange={(value) => {
+            this.setState({ str: value.toString() });
+          }} placeholder={"输入要发送的数据"}></AtInput>
+          <AtButton type={"primary"} disabled={this.isShowSubmit()} onClick={this.sendData}>提交</AtButton>
+        </View>
+
+        <AtToast isOpened={connectLoading ? true : false} duration={0} text="重新连接中..." status={"loading"}></AtToast>
       </View>
     )
   }

@@ -24,7 +24,10 @@ class Scan extends Component<IProps, PageState> {
     onReachBottomDistance: 0
   }
 
-  componentWillUnmount() { }
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch!(actions.startScan());
+  }
 
   componentDidShow() { }
 

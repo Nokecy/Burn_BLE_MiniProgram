@@ -36,9 +36,9 @@ class App extends Component {
     pages: [
       'pages/loading/index',//加载页
       'pages/scan/index',
-      'pages/index/index',
       'pages/log/index',
       'pages/adapter/index',
+      'pages/index/index',
     ],
     tabBar: {
       color: '#666',

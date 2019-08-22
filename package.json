@@ -2,7 +2,7 @@
   "name": "burn_psi",
   "version": "1.0.0",
   "private": true,
-  "description": "进销存小程序",
+  "description": "蓝牙调试小助手",
   "templateInfo": {
     "name": "redux",
     "typescript": true,

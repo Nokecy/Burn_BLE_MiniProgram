@@ -31,13 +31,13 @@ const closeConnect = actionCreator('closeConnect');
 const reConnect = actionCreator('reConnect');
 const notifyValue = actionCreator<{ serviceId: string, characteristicId: string }>('notifyValue');
 const stopNotifyValue = actionCreator<{ serviceId: string, characteristicId: string }>('stopNotifyValue');
-const sendData = actionCreator<{ serviceId: string, characteristicId: string, str: string }>('sendData');
+const sendData = actionCreator<{ str: string }>('sendData');
 const readData = actionCreator<{ serviceId: string, characteristicId: string }>('readData');
 
 const delay = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
 const model = new DvaModelBuilder<Global>({
-    isAdapterOpen: false, isScaning: false, devices: []
+    isAdapterOpen: false, isScaning: false, devices: [],connectedServices:[]
 }, "global")
 
     .case(updateState, (state, payload) => {
@@ -176,17 +176,19 @@ const model = new DvaModelBuilder<Global>({
     .takeEvery(sendData, function* (payload, { put, select }) {
         const global: Global = yield select((state: any) => state.global);
         let str = payload.str;
-        let dataBuffer = new ArrayBuffer(str.length)
-        let dataView = new DataView(dataBuffer)
-        for (var i = 0; i < str.length; i++) {
-            dataView.setUint8(i, str.charAt(i).charCodeAt(0))
-        }
+
+        let typedArray = new Uint8Array(str!.match(/[\da-f]{2}/gi)!.map(function (h) {
+            return parseInt(h, 16)
+        }));
+        let dataBuffer = typedArray.buffer;
         let dataHex = ab2hex(dataBuffer);
-        let writeDatas = hexCharCodeToStr(dataHex);
 
-        yield Taro.writeBLECharacteristicValue({ deviceId: global.connectedDeviceId!, serviceId: payload.serviceId, characteristicId: payload.characteristicId, value: dataBuffer });
+        console.log("16进制", dataHex);
 
-        yield put(logActions.addLog({ log: { title: "发送数据", value: writeDatas } }));
+        const writeCharacteristic = global.writeCharacteristic!;
+        yield Taro.writeBLECharacteristicValue({ deviceId: global.connectedDeviceId!, serviceId: writeCharacteristic.serviceId, characteristicId: writeCharacteristic.characteristicId, value: dataBuffer });
+
+        yield put(logActions.addLog({ log: { title: "发送数据", value: str } }));
 
     })
 
