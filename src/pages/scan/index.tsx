@@ -1,19 +1,20 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { Global, actions } from "../../models/global";
-import { AtList, AtListItem, AtActivityIndicator } from 'taro-ui';
+import { AtList, AtListItem, AtToast } from 'taro-ui';
 
 type PageOwnProps = {
   dispatch?: Function,
+  connectLoading: boolean
 }
 type IProps = Global & PageOwnProps
 type PageState = {}
 
 @connect(({ global, loading }) => ({
   ...global,
-  openBleAdapterLoading: loading.effects["global/openBleAdapter"]
+  connectLoading: loading.effects["global/connect"]
 }))
 class Scan extends Component<IProps, PageState> {
 
@@ -37,17 +38,24 @@ class Scan extends Component<IProps, PageState> {
     Taro.stopPullDownRefresh();
   }
 
+  connectToDevice = (deviceId: string) => {
+    const { dispatch } = this.props;
+    dispatch!(actions.connect({ deviceId: deviceId }));
+  }
+
   render() {
-    const { devices } = this.props;
+    const { devices, connectLoading } = this.props;
     return (
       <View>
         <AtList>
           {
             devices!.map((device) => {
-              return <AtListItem title={device.name} note={device.deviceId} arrow={"right"} />
+              return <AtListItem title={device.name} note={device.deviceId} arrow={"right"} onClick={() => { this.connectToDevice(device.deviceId) }} />
             })
           }
         </AtList>
+
+        <AtToast isOpened={connectLoading ? true : false} duration={0} text="连接中" status={"loading"}></AtToast>
       </View>
     )
   }

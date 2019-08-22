@@ -1,2 +1,3 @@
 import global from "./global";
-export default [global]
+import log from "./log";
+export default [global, log]
