@@ -29,11 +29,11 @@ class Index extends Component<IProps, PageState> {
 
   componentWillReceiveProps(_nextProps) { }
 
-  componentWillUnmount() { }
+  componentWillUnmount() {
+  }
 
-  componentDidShow() { }
-
-  componentDidHide() { }
+  componentDidShow() {
+  }
 
   render() {
     const { openBleAdapterLoading } = this.props;

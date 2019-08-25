@@ -37,7 +37,7 @@ const readData = actionCreator<{ serviceId: string, characteristicId: string }>(
 const delay = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
 const model = new DvaModelBuilder<Global>({
-    isAdapterOpen: false, isScaning: false, devices: [],connectedServices:[]
+    isAdapterOpen: false, isScaning: false, devices: [], connectedServices: []
 }, "global")
 
     .case(updateState, (state, payload) => {
@@ -45,16 +45,13 @@ const model = new DvaModelBuilder<Global>({
     })
 
     .takeEvery(openBleAdapter, function* (_payload, { }) {
-        if (Taro.openBluetoothAdapter) {
+        const data = yield Taro.openBluetoothAdapter();
+        console.log(data);
 
-            const data = yield Taro.openBluetoothAdapter();
-            console.log(data);
+        const discovery: startBluetoothDevicesDiscovery.Promised = yield Taro.startBluetoothDevicesDiscovery({ services: [], allowDuplicatesKey: false, });
+        console.log("devices", discovery);
 
-            const discovery: startBluetoothDevicesDiscovery.Promised = yield Taro.startBluetoothDevicesDiscovery({ services: [], allowDuplicatesKey: false, });
-            console.log("devices", discovery);
-
-            Taro.navigateTo({ url: '/pages/scan/index' });
-        }
+        Taro.redirectTo({ url: '/pages/scan/index' });
     })
 
     .takeEvery(startScan, function* (_payload, { put, call }) {
